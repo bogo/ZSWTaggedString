@@ -1,6 +1,9 @@
 framework module ZSWTaggedString {
   umbrella header "ZSWTaggedString-umbrella.h"
 
+  header "ZSWTaggedString.h"
+  header "ZSWTaggedStringOptions.h"
+
   export *
   module * { export * }
 
