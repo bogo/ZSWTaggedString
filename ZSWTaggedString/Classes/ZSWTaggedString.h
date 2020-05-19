@@ -6,8 +6,9 @@
 //
 //
 
+#import <ZSWTaggedString/ZSWTaggedStringOptions.h>
+
 #import <Foundation/Foundation.h>
-#import "ZSWTaggedStringOptions.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +27,7 @@ extern NSString *ZSWEscapedStringForString(NSString *unescapedString);
 
 /*!
  * @class ZSWTaggedString
- 
+
  * @warning If you create a string by concatenating those that might include '<'
  * not as tags, you \b MUST run these substrings through
  * \ref ZSWEscapedStringForString or parsing may produce undefined results,

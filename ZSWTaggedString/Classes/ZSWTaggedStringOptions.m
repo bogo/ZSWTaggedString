@@ -9,6 +9,7 @@
 #import <ZSWTaggedString/ZSWTaggedStringOptions.h>
 #import <ZSWTaggedString/ZSWStringParser.h>
 #import <ZSWTaggedString/ZSWStringParserTag.h>
+#import <ZSWTaggedString/ZSWTaggedStringAttribute.h>
 
 #import <ZSWTaggedString/ZSWTaggedString_Private.h>
 
@@ -22,15 +23,15 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
 
 + (ZSWTaggedStringOptions *)_private_defaultOptionsNoCopy {
     ZSWTaggedStringOptions *options;
-    
+
     @synchronized (self) {
         if (!ZSWStringParserDefaultOptions) {
             ZSWStringParserDefaultOptions = [ZSWTaggedStringOptions options];
         }
-        
+
         options = ZSWStringParserDefaultOptions;
     }
-    
+
     return options;
 }
 
@@ -41,7 +42,7 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
 }
 
 - (void)commonInit {
-    
+
 }
 
 + (ZSWTaggedStringOptions *)options {
@@ -61,7 +62,7 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
     self = [super init];
     if (self) {
         [self commonInit];
-        
+
         self.baseAttributes = attributes ?: [NSDictionary dictionary];
         self._private_tagToAttributesMap = [NSDictionary dictionary];
     }
@@ -80,19 +81,19 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
     if (![object isKindOfClass:[self class]]) {
         return NO;
     }
-    
+
     if (![object.baseAttributes isEqualToDictionary:self.baseAttributes]) {
         return NO;
     }
-    
+
     if (![object._private_tagToAttributesMap isEqualToDictionary:self._private_tagToAttributesMap]) {
         return NO;
     }
-    
+
     if (object._private_unknownTagWrapper != self._private_unknownTagWrapper && ![object._private_unknownTagWrapper isEqual:self._private_unknownTagWrapper]) {
         return NO;
     }
-    
+
     return YES;
 }
 
@@ -110,10 +111,10 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
 
 - (void)setAttributes:(NSDictionary<NSAttributedStringKey,id> *)dict forTagName:(NSString *)tagName {
     NSParameterAssert(tagName.length > 0);
-    
+
     ZSWTaggedStringAttribute *attribute = [[ZSWTaggedStringAttribute alloc] init];
     attribute.staticDictionary = dict;
-    
+
     [self _private_setWrapper:attribute forTagName:tagName];
 }
 
@@ -138,7 +139,7 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
 - (void)_private_updateAttributedString:(NSMutableAttributedString *)string
                updatedWithTags:(NSArray *)tags {
     NSParameterAssert([string isKindOfClass:[NSMutableAttributedString class]]);
-    
+
     if (string.length == 0) {
         // For example, a string like '<blah></blah>' has no content, so we can 't
         // adjust what's inside based on tags. All we can do is base attributes.
@@ -146,21 +147,21 @@ static ZSWTaggedStringOptions *ZSWStringParserDefaultOptions;
         // to get existing attributes at index 0, which doesn't exist.
         return;
     }
-    
+
     [string setAttributes:self.baseAttributes range:NSMakeRange(0, string.length)];
-    
+
     ZSWTaggedStringAttribute *unknownTagWrapper = self._private_unknownTagWrapper;
-    
+
     for (ZSWStringParserTag *tag in tags) {
         ZSWTaggedStringAttribute *tagValue = self._private_tagToAttributesMap[tag.tagName.lowercaseString];
         NSDictionary<NSAttributedStringKey, id> *attributes = nil;
-        
+
         if (tagValue) {
             attributes = [tagValue attributesForTag:tag forString:string];
         } else if (unknownTagWrapper) {
             attributes = [unknownTagWrapper attributesForTag:tag forString:string];
         }
-        
+
         if (attributes) {
             [string addAttributes:attributes range:tag.tagRange];
         }

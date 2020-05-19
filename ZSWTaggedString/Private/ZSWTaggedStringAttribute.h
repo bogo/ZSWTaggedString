@@ -6,7 +6,9 @@
 //
 //
 
-#import <ZSWTaggedString/ZSWTaggedString.h>
+#import <ZSWTaggedString/ZSWTaggedStringOptions.h>
+
+#import <Foundation/Foundation.h>
 
 @class ZSWStringParserTag;
 
